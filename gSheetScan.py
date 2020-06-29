@@ -13,9 +13,13 @@ GSHEET_NAME_ATTRIBUTE = 'name'
 GSHEET_ID_ATTRIBUTE = 'id'
 GSHEET_MODIFIED_TIME_ATTRIBUTE = 'modifiedTime'
 
-# AWS 
+# AWS - Dynamo
 DYNAMODB_TABLE = 'gSheetsModified'
 DYNAMODB = boto3.resource('dynamodb')
+
+# AWS - SQS
+SQS = boto3.resource('sqs')
+SQS_QUEUE_NAME = 'gSheetImportQueue'
 
 def dynamo_add_gsheet_record(gSheet):
   table = DYNAMODB.Table(DYNAMODB_TABLE)
@@ -35,12 +39,33 @@ def dynamo_find_gsheet_record(gSheetID):
       # No match found, return None
       return None
 
-def start_import(gSheet):
-  print ("Starting import for gSheet {}".format(gSheet.get('id')))
-  # TODO: Add trigger
+def send_import_event(gSheet):
+  gSheetID = gSheet.get(GSHEET_ID_ATTRIBUTE)
+  gSheetName = gSheet.get(GSHEET_NAME_ATTRIBUTE)
+  gSheetModifiedTime = gSheet.get(GSHEET_MODIFIED_TIME_ATTRIBUTE)
+  message = "Sending import event to SQS queue for gSheet " + gSheetID
+  print (message)
+  queue = SQS.get_queue_by_name(QueueName=SQS_QUEUE_NAME)
+  response = queue.send_message(
+    MessageAttributes={
+        GSHEET_ID_ATTRIBUTE: {
+            'DataType': 'String',
+            'StringValue': gSheetID
+        },
+        GSHEET_NAME_ATTRIBUTE: {
+            'DataType': 'String',
+            'StringValue': gSheetName
+        },
+        GSHEET_MODIFIED_TIME_ATTRIBUTE: {
+            'DataType': 'String',
+            'StringValue': gSheetModifiedTime
+        }
+    },
+    MessageBody=message,
+  )
   return
 
-def main(event, context):
+def handler(event, context):
   # Authenticate to Google
   creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
@@ -73,13 +98,13 @@ def main(event, context):
         putGSheetResponse = dynamo_add_gsheet_record(gSheet)
 
         print ("Running import for gSheet {} (ID: {})".format(gSheetName, gSheetID))
-        start_import(gSheet)
+        send_import_event(gSheet)
       else:
         if dynamodbResponse.get(GSHEET_MODIFIED_TIME_ATTRIBUTE, '') == gSheetModifiedTime:
           print ("Previous timestamp matches current timestamp, Skipping import for gSheet {} (ID: {})".format(gSheetName, gSheetID))
         else:
           print ("Previous timestamp differs from current timestamp, Running import for gSheet {} (ID: {})".format(gSheetName, gSheetID))
-          start_import(gSheet)
+          send_import_event(gSheet)
       print ("")
 
     page_token = response.get('nextPageToken', None)

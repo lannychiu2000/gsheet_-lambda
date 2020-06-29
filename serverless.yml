@@ -1,4 +1,4 @@
-service: gsheetscan
+service: gSheet
 
 plugins:
   - serverless-python-requirements
@@ -25,12 +25,25 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: 'arn:aws:dynamodb:us-east-1:*:*'
+    - Effect: Allow
+      Action: # Gives permission to SQS in a specific region
+        - sqs:*
+      Resource: 'arn:aws:sqs:us-east-1:*:*'
 
 functions:
-  scanSheet:
-    handler: handler.main
+  gSheetScan:
+    handler: gSheetScan.handler
     events:
       - schedule: rate(30 minutes)
+  gSheetImport:
+    handler: gSheetImport.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - gSheetImportQueue
+              - Arn
+          batchSize: 1
       
 resources:
   Resources:
@@ -47,4 +60,8 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    gSheetImportQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "gSheetImportQueue"          
 

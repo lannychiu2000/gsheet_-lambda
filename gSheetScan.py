@@ -112,4 +112,4 @@ def handler(event, context):
       break
 
 if __name__ == '__main__':
-    main('','')
+    handler('','')

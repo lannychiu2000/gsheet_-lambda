@@ -13,4 +13,5 @@ def handler(event, context):
     # Add import functionality here
 
 if __name__ == '__main__':
+  event = ''
   handler(event,'')

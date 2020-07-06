@@ -2,12 +2,17 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
+from oauth2client.service_account import ServiceAccountCredentials
+from arm_utilities import load_credentials
+
+# Global Variables
+acc,sh,em,post,ho,use,wo,database,go,look,look_sec = load_credentials()
 
 # Google API
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-SERVICE_ACCOUNT_FILE = 'service.json'
-GOOGLE_DRIVE_ID = '0ADq4ronJcL3eUk9PVA'
-GOOGLE_DRIVE_FOLDER_ID = '1RqfxFoL_ybMj17qOxZIvWjmQFVywKSkM'
+SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+GOOGLE_SERVICE_ACCOUNT_INFO = go
+GOOGLE_DRIVE_ID = '0B2stEomknvX9ZjhrbldHUjRPd2M'
+GOOGLE_DRIVE_FOLDER_ID = '1M0xBJgweZUTyLWT_7crzebZDqsF-QCVU'
 GSHEET_MIME_TYPE = 'application/vnd.google-apps.spreadsheet'
 GSHEET_NAME_ATTRIBUTE = 'name'
 GSHEET_ID_ATTRIBUTE = 'id'
@@ -66,9 +71,8 @@ def send_import_event(gSheet):
   return
 
 def handler(event, context):
-  # Authenticate to Google
-  creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+  creds = service_account.Credentials.from_service_account_info(
+        GOOGLE_SERVICE_ACCOUNT_INFO, scopes=SCOPES)
   service = build('drive', 'v3', credentials=creds, cache_discovery=False)
   page_token = None
 

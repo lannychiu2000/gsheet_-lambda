@@ -24,11 +24,15 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: 'arn:aws:dynamodb:us-east-1:*:*'
+      Resource: '*'
     - Effect: Allow
-      Action: # Gives permission to SQS in a specific region
+      Action: # Gives full permission to SQS
         - sqs:*
-      Resource: 'arn:aws:sqs:us-east-1:*:*'
+      Resource: '*'
+    - Effect: Allow
+      Action: # Gives full permission to S3
+        - s3:*
+      Resource: '*'
 
 functions:
   gSheetScan:

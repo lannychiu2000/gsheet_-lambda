@@ -126,7 +126,6 @@ def scanGDrive():
             else:
                 if dynamodbResponse.get(GSHEET_MODIFIED_TIME_ATTRIBUTE, '') == gSheetModifiedTime:
                     print ("{} INFO: scanGDrive - Previous timestamp matches current timestamp, Skipping import for gSheet {} (ID: {})".format(datetime.datetime.now(), gSheetName, gSheetID))
-                    importSheet(gSheet)
                 else:
                     print ("{} INFO: scanGDrive - Previous timestamp differs from current timestamp, Running import for gSheet {} (ID: {})".format(datetime.datetime.now(), gSheetName, gSheetID))
                     importSheet(gSheet)

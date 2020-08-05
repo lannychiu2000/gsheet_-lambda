@@ -39,8 +39,10 @@ range_string_2 = ''
 df_as_list_2 = ''
 df_as_list = ''
 error_list = []
+client_list_file_dir = os.path.dirname(os.path.realpath(__file__))
 client_list_file_name = 'client_list.json'
 debug = False
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Google API
 SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -622,7 +624,8 @@ def importSheet(gSheet):
     gSheetModifiedTime = gSheet.get(GSHEET_MODIFIED_TIME_ATTRIBUTE)
 
     # Open the client list JSON filename with mappings
-    with open(client_list_file_name) as client_list_file:
+    client_list_file_path = client_list_file_dir + "/" + client_list_file_name
+    with open(client_list_file_path) as client_list_file:
         print ('{} INFO: importSheet - Loading client list from {}...'.format(datetime.datetime.now(), client_list_file_name))
         client_list = json.load(client_list_file)
 

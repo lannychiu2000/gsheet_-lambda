@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PYTHONUNBUFFERED=TRUE
+PYTHONUNBUFFERED=TRUE
 timeStamp=$(date +"%T")
 launchDir="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 launchScript="import.py"

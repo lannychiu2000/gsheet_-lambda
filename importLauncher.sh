@@ -1,9 +1,9 @@
 #!/bin/bash
 
 timeStamp=$(date +"%T")
-launchDir="/root/arm/import"
+launchDir="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 launchScript="import.py"
-PID=`/bin/ps -ef | grep ${launchScript} | grep -v ${timeStamp} | grep -v grep | awk '{print $2}'`
+PID=`/bin/ps -ef | grep ${launchScript} | grep -v grep | awk '{print $2}'`
 
 if [[ ${PID} ]]; then
   echo "$(date) INFO: Found existing process running ${PID}. Exiting..."

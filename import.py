@@ -126,10 +126,11 @@ def scanGDrive():
                 putGSheetResponse = dynamo_add_gsheet_record(updatedGSheet)
 
             else:
-                if dynamodbResponse.get(GSHEET_MODIFIED_TIME_ATTRIBUTE, '') == gSheetModifiedTime:
+                previousTimeStamp = dynamodbResponse.get(GSHEET_MODIFIED_TIME_ATTRIBUTE, '')
+                if previousTimeStamp == gSheetModifiedTime:
                     print ("{} INFO: scanGDrive - Previous timestamp matches current timestamp, Skipping import for gSheet {} (ID: {})".format(datetime.datetime.now(), gSheetName, gSheetID))
                 else:
-                    print ("{} INFO: scanGDrive - Previous timestamp differs from current timestamp, Running import for gSheet {} (ID: {})".format(datetime.datetime.now(), gSheetName, gSheetID))
+                    print ("{} INFO: scanGDrive - Previous timestamp ({}) differs from current timestamp ({}), Running import for gSheet {} (ID: {})".format(datetime.datetime.now(), previousTimeStamp, gSheetModifiedTime, gSheetName, gSheetID))
                     importSheet(gSheet)
                     print ("{} INFO: scanGDrive - Updating DB with new {} property {} (ID: {})".format(datetime.datetime.now(), GSHEET_MODIFIED_TIME_ATTRIBUTE, gSheetName, gSheetID))
                     updatedGSheet = getSheet(gSheetID)

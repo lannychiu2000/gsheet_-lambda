@@ -101,10 +101,13 @@ def scanGDrive():
             q = "'" + GOOGLE_DRIVE_FOLDER_ID + "' in parents and mimeType = '" + GSHEET_MIME_TYPE + "'",
             includeItemsFromAllDrives = True,
             supportsAllDrives = True,
-            fields='nextPageToken, files(id, name, modifiedTime)',
+            fields='nextPageToken, files(id)',
             pageToken=page_token).execute()
 
-        for gSheet in response.get('files', []):
+        for file in response.get('files', []):
+            # Pull latest info based on ID as query metadata is cached and may be stale
+            gSheet = getSheet(file.get(GSHEET_ID_ATTRIBUTE))
+
             gSheetID = gSheet.get(GSHEET_ID_ATTRIBUTE)
             gSheetName = gSheet.get(GSHEET_NAME_ATTRIBUTE)
             gSheetModifiedTime = gSheet.get(GSHEET_MODIFIED_TIME_ATTRIBUTE)

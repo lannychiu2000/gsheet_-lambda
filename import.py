@@ -648,7 +648,7 @@ def importSheet(gSheet):
         print ('{} INFO: importSheet - Loading data for table {}, please wait...'.format(datetime.datetime.now(), table_name))
         if adj_cli == "Crossrope" or adj_cli == "23andMe":
             order_upload(order_url,active_client,table_name,adj_cli ,aws_schema,recomendation)
-        print ('{} INFO: importSheet - Done...'.format(datetime.datetime.now()))
+        print ('{} INFO: importSheet - Done'.format(datetime.datetime.now()))
     else:
         print ('{} INFO: importSheet - No metadata found for gSheet {}, skipping import...'.format(datetime.datetime.now(), gSheetName))
 

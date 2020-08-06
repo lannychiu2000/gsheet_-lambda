@@ -111,7 +111,6 @@ def scanGDrive():
             gSheetID = gSheet.get(GSHEET_ID_ATTRIBUTE)
             gSheetName = gSheet.get(GSHEET_NAME_ATTRIBUTE)
             gSheetModifiedTime = gSheet.get(GSHEET_MODIFIED_TIME_ATTRIBUTE)
-            print ("{} INFO: scanGDrive - Found Google Drive file: {} ({})".format(datetime.datetime.now(), gSheetName, gSheetModifiedTime))
             print ("{} INFO: scanGDrive - Querying Dynamo DB to find previous last modified time".format(datetime.datetime.now()))
             dynamodbResponse = dynamo_find_gsheet_record(gSheetID)
 
